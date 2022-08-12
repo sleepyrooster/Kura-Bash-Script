@@ -31,14 +31,14 @@ echo $memlimitdec
 # To kill the program which is higher than max memory limit (which is set)
 while (( $memlimitdec > 1 ));
 do
-i=1
-echo $i
+
 #Get the PID from the ps command
 pid=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk '$4 >= 0.3' | sed q | awk '{print $2}')
 
 #kill the program in question
 kill -9 "$pid"
 
+# To use as a counter to get the number of lines
 limiter=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk '$4 >= 0.3' | awk '{print $4 }')
 counter=$(echo $limiter | awk '{print $1"\n"$2}' | awk '{print NR}')
 
