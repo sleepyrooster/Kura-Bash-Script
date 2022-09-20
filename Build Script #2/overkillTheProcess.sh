@@ -14,42 +14,42 @@
 ## 4) Update on point (4), wrote script to fix it but WSL crashed                                                                                                                                         ##
 ##################################################################################################################################################
 
+# setiting the memory limit for the program
+echo "Set the memory limit for the machine"
+read limit;
+
 
 # To get the processes that are over the set limit
-header=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | sed q)
-echo "$header" && ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk '$4 >= 0.3' 
+#header=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | sed q)
+ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk -v memlimiter=limit '$4 >= memlimit' 
 
-#Setting the Variable for the while loop
-memlimit=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk '$4 >= 0.3'|sed q | awk '{print $4 }')
-echo $memlimit
+# Turning the memory output into a variable
+mem=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk -v memlimiter=limit '$4 >= memlimit'| awk '{print $4 }')
+echo $mem
 
-#convert the decimal into an integar
-memlimitdec=$(echo $memlimit | awk -F '.' '{print $2}')
-#memlimitdec=2
+
+#convert the memory output which is in decimal into an integar
+memlimitdec=$(echo $mem | awk -F '.' '{print $2}')
 echo $memlimitdec
 
+# Counting the number of programs which run over the memory limit
+memOver=$(echo memlimitdec | awk '{print NF}')
+# Setting a counter
+a=1
+
 # To kill the program which is higher than max memory limit (which is set)
-while (( $memlimitdec > 1 ));
+while (( $a -le $memOver ));
 do
 
 #Get the PID from the ps command
-pid=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk '$4 >= 0.3' | sed q | awk '{print $2}')
+pid=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk -v memlimiter=limit '$4 >= memlimit' | sed q | awk '{print $2}')
 
 #kill the program in question
 kill -9 "$pid"
 
-# To use as a counter to get the number of lines
-limiter=$(ps -e --format uname,pid,ppid,%mem,%cpu,cmd --sort=-%mem | awk '$4 >= 0.3' | awk '{print $4 }')
-counter=$(echo $limiter | awk '{print $1"\n"$2}' | awk '{print NR}')
-
-if [[ $counter = 0 ]];
-then 
-break
-fi
+i=$(($i + 1))
 
 done
-
-
 
 
 
