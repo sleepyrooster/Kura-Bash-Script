@@ -1,0 +1,5 @@
+USER       PID  PPID %MEM %CPU CMD
+root         1     0  0.0  0.1 /init
+root         8     1  0.0  0.0 /init
+walter       9     8  0.0  0.2 -bash
+walter      33     9  0.0  0.0 ps -e --format uname,pid,ppid,%mem,%cpu,cmd
